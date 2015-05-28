@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 Now it supports cell with any size, you can use it just like any other UICollectionViewFlowLayout, all you have to do is to set the itemSize and then all are done .
                    DESC
 
-  s.homepage     = "https://github.com/Phelthas/LXMExpandLayout"
+  s.homepage     = "http://github.com/Phelthas/LXMExpandLayout"
 
   s.license      = "MIT"
 
