@@ -10,6 +10,8 @@ with itemSize set to {80, 100}, you will see three items in one row on iPhone5, 
 ![image](https://raw.githubusercontent.com/Phelthas/LXMExpandLayout/master/ScreenShots/ScreenShotForiPhone5.gif "iphone5")         ![image](https://raw.githubusercontent.com/Phelthas/LXMExpandLayout/master/ScreenShots/ScreenShotForiPhone6.gif "iphone6")   
 
 
+##attention
+there are some limitation on this LXMExpandLayout, the itemSize you set, however, you must make sure that there are at least three items in one row, otherwise it will do not work......
 
 ##Install 
 ###Using cocoaPods
@@ -39,8 +41,9 @@ with itemSize set to {80, 100}, you will see three items in one row on iPhone5, 
 3, support multipule sections     
 
 
-## 帮助
-如果有什么问题，欢迎issue和pullRequest  
+## Help
+if you have any questions or suggestions, wellcome for issues and pullRequest.    
+
 
 ## License
 LXMExpandLayout is available under the MIT license. See the LICENSE file for more info. 
