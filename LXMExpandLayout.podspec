@@ -20,7 +20,7 @@ Now it supports cell with any size, you can use it just like any other UICollect
 
   s.platform     = :ios, "7.0"
 
-  s.source       = { :git => "git@github.com:Phelthas/LXMExpandLayout.git", :tag => "0.0.1" }
+  s.source       = { :git => "http://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.1" }
 
   s.source_files  = "LXMExpandLayoutDemo/LXMExpandLayout/*.{h,m}"
 
