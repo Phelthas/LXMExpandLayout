@@ -6,7 +6,8 @@ LXMExpandLayout is a imitation of [DaiExpandCollectionView](https://github.com/D
 Now it supports cell with any size, you can use it just like any other UICollectionViewFlowLayout, all you have to do is to set the itemSize and then all are done .
 
 It also works well with autoLayout, since you need only to set the item size, you may see different UI on different devices, for example:      
-with itemSize set to {80, 100}, you will see three items in one row on iPhone5, but you will see four on iPhone6.     
+with itemSize set to {80, 100}, you will see three items in one row on iPhone5, but you will see four on iPhone6.   
+![image](https://raw.githubusercontent.com/Phelthas/LXMExpandLayout/master/ScreenShots/ScreenShotForiPhone5.gif "iphone5")         ![image](https://raw.githubusercontent.com/Phelthas/LXMExpandLayout/master/ScreenShots/ScreenShotForiPhone6.gif "iphone6")   
 
 
 
