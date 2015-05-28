@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 
-  s.name         = "LXMExpandLayoutw"
+  s.name         = "LXMExpandLayout"
   s.version      = "0.0.1"
   s.summary      = "A UICollectionViewLayout that can expand one item with spring animation without doing any transition, support cell with any size."
 
