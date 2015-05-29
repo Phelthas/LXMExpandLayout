@@ -33,7 +33,7 @@
     self = [super init];
     if (self) {
         self.numberOfItemsInRow = 1;//这里必须不能是0，否则下面会出现0/0的bug
-        self.seletedIndexPath = [NSIndexPath indexPathForItem:1 inSection:0];
+        self.seletedIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
     }
     return self;
 }
@@ -44,9 +44,9 @@
     self.itemWidth = self.itemSize.width;
     self.itemHeight = self.itemSize.height;
     self.collectionViewWidth = CGRectGetWidth(self.collectionView.frame);
-    self.numberOfItemsInRow = [[super layoutAttributesForElementsInRect:CGRectMake(0, 0, self.collectionViewWidth, self.itemHeight)] count];//取出按默认位置一行应该有几个item
-    self.padding = (self.collectionViewWidth - self.itemWidth * self.numberOfItemsInRow) / (self.numberOfItemsInRow - 1);
-    self.expandedItemWidth = self.collectionViewWidth - self.itemWidth - self.padding;
+    self.numberOfItemsInRow = [[super layoutAttributesForElementsInRect:CGRectMake(0, 0, self.collectionViewWidth - self.sectionInset.left - self.sectionInset.right, self.itemHeight)] count];//取出按默认位置一行应该有几个item
+    self.padding = (self.collectionViewWidth - self.itemWidth * self.numberOfItemsInRow - self.sectionInset.left - self.sectionInset.right) / (self.numberOfItemsInRow - 1);
+    self.expandedItemWidth = self.collectionViewWidth - self.itemWidth - self.padding - self.sectionInset.left - self.sectionInset.right;
     self.expandedFactor = self.expandedItemWidth / self.itemWidth;
     self.expandedItemHeight = self.itemHeight * self.expandedFactor;
     
@@ -56,17 +56,26 @@
     //因为每次layout的时候这两个属性都会变，所以写在这里
     UICollectionViewLayoutAttributes *selectedAttributes = [self layoutAttributesForItemAtIndexPath:self.seletedIndexPath];
     self.selectedItemOriginalY = selectedAttributes.frame.origin.y;//取出selectedItem没放大时的y位置
-    self.sameRowItemArray = [super layoutAttributesForElementsInRect:CGRectMake(0, selectedAttributes.frame.origin.y, self.collectionViewWidth, self.itemHeight)];//取出跟selectedItem同一行的items
+    self.sameRowItemArray = [super layoutAttributesForElementsInRect:CGRectMake(0, selectedAttributes.frame.origin.y, self.collectionViewWidth - self.sectionInset.left - self.sectionInset.right, self.itemHeight)];//取出跟selectedItem同一行的items
     BOOL shouldExpandToLeft = [self shouldItemExpandToLeftWithAttributes:selectedAttributes];//这个是根据selectedItem变的
     
     //修改每个item的UICollectionViewLayoutAttributes
     CGRect newRect = rect;
     newRect.origin.y = newRect.origin.y - CGRectGetHeight(self.collectionView.bounds);
     newRect.size.height += CGRectGetHeight(self.collectionView.bounds) * 2;
-//    newRect = CGRectMake(0, 0, self.collectionViewContentSize.width, self.collectionViewContentSize.height);
-    NSArray *resultArray = [super layoutAttributesForElementsInRect:newRect];//因为要改变item的大小，会导致rect比默认的rect要大，所以这里要相应扩大计算范围，否则会出现显示不全的问题
+    newRect = CGRectMake(0, 0, self.collectionViewContentSize.width, self.collectionViewContentSize.height);
+    NSArray *originalArray = [super layoutAttributesForElementsInRect:newRect];//因为要改变item的大小，会导致rect比默认的rect要大，所以这里要相应扩大计算范围，否则会出现显示不全的问题
     CGFloat heightPadding = (self.expandedItemHeight - self.itemHeight * (self.numberOfItemsInRow - 1)) / (self.numberOfItemsInRow - 2);
     
+    
+    NSMutableArray *resultArray = [NSMutableArray array];
+    for (UICollectionViewLayoutAttributes *attributes in originalArray) {
+        if (attributes.frame.origin.x + self.itemWidth >= self.collectionViewWidth) {
+            //UICollectionViewFlowLayout 的一个bug，originalArray的个数会比cell的总个数还多，参考http://stackoverflow.com/questions/12927027/uicollectionview-flowlayout-not-wrapping-cells-correctly-ios/13389461#13389461
+        } else {
+            [resultArray addObject:attributes];
+        }
+    }
 
     for (UICollectionViewLayoutAttributes *attributes in resultArray) {
         
@@ -74,23 +83,21 @@
             attributes.indexPath.section == self.seletedIndexPath.section) {
             //被选中的item
             if (shouldExpandToLeft) {
-                attributes.transform = CGAffineTransformMakeTranslation(self.expandedItemWidth / 2 - attributes.center.x, self.expandedItemHeight / 2 - self.itemHeight / 2);//平移到中心位置
+                attributes.transform = CGAffineTransformMakeTranslation(self.expandedItemWidth / 2 - attributes.center.x + self.sectionInset.left, self.expandedItemHeight / 2 - self.itemHeight / 2);//平移到中心位置
                 attributes.transform = CGAffineTransformScale(attributes.transform, self.expandedFactor, self.expandedFactor);//放大
             } else {
-                attributes.transform = CGAffineTransformMakeTranslation((self.collectionViewWidth - self.expandedItemWidth / 2) - attributes.center.x, self.expandedItemHeight / 2 - self.itemHeight / 2);//平移到中心位置
+                attributes.transform = CGAffineTransformMakeTranslation((self.collectionViewWidth - self.expandedItemWidth / 2) - attributes.center.x - self.sectionInset.right, self.expandedItemHeight / 2 - self.itemHeight / 2);//平移到中心位置
                 attributes.transform = CGAffineTransformScale(attributes.transform, self.expandedFactor, self.expandedFactor);//放大
             }
-            
         } else if ([self isItemInTheSelectedIndexPathRowWithUICollectionViewLayoutAttributes:attributes]) {
             //与选中item同一行的item，竖直排列在选中item的旁边
             if (shouldExpandToLeft) {
-                attributes.frame = CGRectMake(self.collectionViewWidth - self.itemWidth, self.selectedItemOriginalY, self.itemWidth, self.itemHeight);
+                attributes.frame = CGRectMake(self.collectionViewWidth - self.itemWidth - self.sectionInset.right, self.selectedItemOriginalY, self.itemWidth, self.itemHeight);
                 self.selectedItemOriginalY += (self.itemHeight + heightPadding);
             } else {
-                attributes.frame = CGRectMake(0, self.selectedItemOriginalY, self.itemWidth, self.itemHeight);
+                attributes.frame = CGRectMake(self.sectionInset.left, self.selectedItemOriginalY, self.itemWidth, self.itemHeight);
                 self.selectedItemOriginalY += (self.itemHeight + heightPadding);
             }
-            
             
         } else if (attributes.indexPath.section == self.seletedIndexPath.section
                     && attributes.indexPath.item > self.seletedIndexPath.item) {
@@ -103,7 +110,6 @@
         }
         
     }
-    
     return resultArray;
 }
 

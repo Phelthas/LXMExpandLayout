@@ -25,6 +25,9 @@ extern NSString * const TESTCollectionViewCellIdentifier;
     // Do any additional setup after loading the view, typically from a nib.
     LXMExpandLayout *expandLayout = [[LXMExpandLayout alloc] init];
     expandLayout.itemSize = CGSizeMake(80, 100);
+//    expandLayout.minimumLineSpacing = 20;//默认是10，可以随便设置
+//    expandLayout.minimumInteritemSpacing = 20;//默认是10，可以随便设置
+    expandLayout.sectionInset = UIEdgeInsetsMake(20, 10, 20, 40);
     self.collectionView.collectionViewLayout = expandLayout;
 }
 
