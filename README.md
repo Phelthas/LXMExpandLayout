@@ -13,6 +13,12 @@ with itemSize set to {80, 100}, you will see three items in one row on iPhone5, 
 ##attention
 there are some limitation on this LXMExpandLayout, the itemSize you set, however, you must make sure that there are at least three items in one row, otherwise it will do not work......
 
+##Update
+version 0.0.2, support sectionInsect    
+now you can set the `sectionInsect`of LXMExpandLayout and it will work just like UICollectionViewFlowLayout
+
+
+
 ##Install 
 ###Using cocoaPods
 1, add `pod 'LXMExpandLayout', '~> 0.0.1'`to your podFile    
@@ -36,9 +42,8 @@ there are some limitation on this LXMExpandLayout, the itemSize you set, however
     
     
 ##Todo
-1, take `sectionInset` into account     
-2, support addItem , deleteItem and other opration    
-3, support multipule sections     
+1, support addItem , deleteItem and other opration    
+2, support multipule sections     
 
 
 ## Help
