@@ -21,7 +21,7 @@ now you can set the `sectionInsect`of LXMExpandLayout and it will work just like
 
 ##Install 
 ###Using cocoaPods
-1, add `pod 'LXMExpandLayout', '~> 0.0.1'`to your podFile    
+1, add `pod 'LXMExpandLayout', '0.0.2'`to your podFile    
 2, run `pod install` or `pod update`        
 
 ###manually
