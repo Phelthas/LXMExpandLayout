@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "LXMExpandLayout"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "A UICollectionViewLayout that can expand one item with spring animation without doing any transition, support cell with any size."
 
   s.description  = <<-DESC
@@ -20,7 +20,7 @@ Now it supports cell with any size, you can use it just like any other UICollect
 
   s.platform     = :ios, "7.0"
 
-  s.source       = { :git => "https://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.2" }
 
   s.source_files  = "LXMExpandLayoutDemo/LXMExpandLayout/*.{h,m}"
 
