@@ -45,6 +45,9 @@
     self.itemHeight = self.itemSize.height;
     self.collectionViewWidth = CGRectGetWidth(self.collectionView.frame);
     self.numberOfItemsInRow = [[super layoutAttributesForElementsInRect:CGRectMake(0, 0, self.collectionViewWidth - self.sectionInset.left - self.sectionInset.right, self.itemHeight)] count];//取出按默认位置一行应该有几个item
+    if (self.numberOfItemsInRow <= 3) {
+        self.numberOfItemsInRow = 3;//这里必须加这一句判断，否则当cell个数小于3时会出问题
+    }
     self.padding = (self.collectionViewWidth - self.itemWidth * self.numberOfItemsInRow - self.sectionInset.left - self.sectionInset.right) / (self.numberOfItemsInRow - 1);
     self.expandedItemWidth = self.collectionViewWidth - self.itemWidth - self.padding - self.sectionInset.left - self.sectionInset.right;
     self.expandedFactor = self.expandedItemWidth / self.itemWidth;
@@ -53,6 +56,9 @@
 }
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
+    if ([self.collectionView numberOfItemsInSection:0] == 0) {
+        return nil;
+    }
     //因为每次layout的时候这两个属性都会变，所以写在这里
     UICollectionViewLayoutAttributes *selectedAttributes = [self layoutAttributesForItemAtIndexPath:self.seletedIndexPath];
     self.selectedItemOriginalY = selectedAttributes.frame.origin.y;//取出selectedItem没放大时的y位置
@@ -66,7 +72,7 @@
     newRect = CGRectMake(0, 0, self.collectionViewContentSize.width, self.collectionViewContentSize.height);
     NSArray *originalArray = [super layoutAttributesForElementsInRect:newRect];//因为要改变item的大小，会导致rect比默认的rect要大，所以这里要相应扩大计算范围，否则会出现显示不全的问题
     CGFloat heightPadding = (self.expandedItemHeight - self.itemHeight * (self.numberOfItemsInRow - 1)) / (self.numberOfItemsInRow - 2);
-    
+   
     
     NSMutableArray *resultArray = [NSMutableArray array];
     for (UICollectionViewLayoutAttributes *attributes in originalArray) {
@@ -120,6 +126,7 @@
 }
 
 
+
 #pragma mark - publicMethod
 
 
@@ -147,5 +154,33 @@
     }
     return result;
 }
+
+@end
+
+
+#pragma mark - 
+
+@implementation UICollectionView (LXMExpandLayout)
+
+- (void)expandItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+    LXMExpandLayout *layout = (LXMExpandLayout *)self.collectionViewLayout;
+    if (animated) {
+        //用UIView Animation 包住performBatchUpdates可以使view的Animation代替collectionView默认的动画
+        [UIView animateWithDuration:0.6 delay:0 usingSpringWithDamping:0.5 initialSpringVelocity:0.3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            [self performBatchUpdates:^{
+                layout.seletedIndexPath = indexPath;
+            } completion:^(BOOL finished) {
+                
+            }];
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+    } else {
+        layout.seletedIndexPath = indexPath;
+        [layout invalidateLayout];
+    }
+}
+
 
 @end

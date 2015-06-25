@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		435337C31B3BD275002F8731 /* xianhua.png in Resources */ = {isa = PBXBuildFile; fileRef = 435337C21B3BD275002F8731 /* xianhua.png */; };
 		436721CF1B15C135000CADBA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 436721CE1B15C135000CADBA /* main.m */; };
 		436721D21B15C135000CADBA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 436721D11B15C135000CADBA /* AppDelegate.m */; };
 		436721D51B15C135000CADBA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 436721D41B15C135000CADBA /* ViewController.m */; };
@@ -16,7 +17,6 @@
 		436721E91B15C135000CADBA /* LXMExpandLayoutDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 436721E81B15C135000CADBA /* LXMExpandLayoutDemoTests.m */; };
 		436721F51B15C17D000CADBA /* LXMExpandLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 436721F41B15C17D000CADBA /* LXMExpandLayout.m */; };
 		436721F81B15C261000CADBA /* TESTCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 436721F71B15C261000CADBA /* TESTCollectionViewCell.m */; };
-		43D6CE841B171232008C1D8C /* UICollectionView+LXMExpandLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 43D6CE831B171232008C1D8C /* UICollectionView+LXMExpandLayout.m */; };
 		43D6CE9A1B1717E6008C1D8C /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 43D6CE861B1717E6008C1D8C /* 1.png */; };
 		43D6CE9B1B1717E6008C1D8C /* 10.png in Resources */ = {isa = PBXBuildFile; fileRef = 43D6CE871B1717E6008C1D8C /* 10.png */; };
 		43D6CE9C1B1717E6008C1D8C /* 11.png in Resources */ = {isa = PBXBuildFile; fileRef = 43D6CE881B1717E6008C1D8C /* 11.png */; };
@@ -50,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		435337C21B3BD275002F8731 /* xianhua.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = xianhua.png; sourceTree = "<group>"; };
 		436721C91B15C135000CADBA /* LXMExpandLayoutDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LXMExpandLayoutDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		436721CD1B15C135000CADBA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		436721CE1B15C135000CADBA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -67,8 +68,6 @@
 		436721F41B15C17D000CADBA /* LXMExpandLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LXMExpandLayout.m; sourceTree = "<group>"; };
 		436721F61B15C261000CADBA /* TESTCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TESTCollectionViewCell.h; sourceTree = "<group>"; };
 		436721F71B15C261000CADBA /* TESTCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TESTCollectionViewCell.m; sourceTree = "<group>"; };
-		43D6CE821B171232008C1D8C /* UICollectionView+LXMExpandLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UICollectionView+LXMExpandLayout.h"; sourceTree = "<group>"; };
-		43D6CE831B171232008C1D8C /* UICollectionView+LXMExpandLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UICollectionView+LXMExpandLayout.m"; sourceTree = "<group>"; };
 		43D6CE861B1717E6008C1D8C /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		43D6CE871B1717E6008C1D8C /* 10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10.png; sourceTree = "<group>"; };
 		43D6CE881B1717E6008C1D8C /* 11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 11.png; sourceTree = "<group>"; };
@@ -177,8 +176,6 @@
 			children = (
 				436721F31B15C17D000CADBA /* LXMExpandLayout.h */,
 				436721F41B15C17D000CADBA /* LXMExpandLayout.m */,
-				43D6CE821B171232008C1D8C /* UICollectionView+LXMExpandLayout.h */,
-				43D6CE831B171232008C1D8C /* UICollectionView+LXMExpandLayout.m */,
 			);
 			path = LXMExpandLayout;
 			sourceTree = "<group>";
@@ -186,6 +183,7 @@
 		43D6CE851B1717E6008C1D8C /* images */ = {
 			isa = PBXGroup;
 			children = (
+				435337C21B3BD275002F8731 /* xianhua.png */,
 				43D6CE861B1717E6008C1D8C /* 1.png */,
 				43D6CE871B1717E6008C1D8C /* 10.png */,
 				43D6CE881B1717E6008C1D8C /* 11.png */,
@@ -294,6 +292,7 @@
 				43D6CEA81B1717E6008C1D8C /* 4.png in Resources */,
 				43D6CEA31B1717E6008C1D8C /* 18.png in Resources */,
 				43D6CEA91B1717E6008C1D8C /* 5.png in Resources */,
+				435337C31B3BD275002F8731 /* xianhua.png in Resources */,
 				43D6CEAB1B1717E6008C1D8C /* 7.png in Resources */,
 				43D6CE9B1B1717E6008C1D8C /* 10.png in Resources */,
 				43D6CEA21B1717E6008C1D8C /* 17.png in Resources */,
@@ -332,7 +331,6 @@
 			files = (
 				436721D51B15C135000CADBA /* ViewController.m in Sources */,
 				436721D21B15C135000CADBA /* AppDelegate.m in Sources */,
-				43D6CE841B171232008C1D8C /* UICollectionView+LXMExpandLayout.m in Sources */,
 				436721F81B15C261000CADBA /* TESTCollectionViewCell.m in Sources */,
 				436721CF1B15C135000CADBA /* main.m in Sources */,
 				436721F51B15C17D000CADBA /* LXMExpandLayout.m in Sources */,

@@ -7,10 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UICollectionView+LXMExpandLayout.h"
 
 @interface LXMExpandLayout : UICollectionViewFlowLayout
 
 @property (nonatomic, strong) NSIndexPath *seletedIndexPath;
+
+@end
+
+
+
+@interface UICollectionView (LXMExpandLayout)
+
+- (void)expandItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 
 @end
