@@ -7,9 +7,10 @@
 //
 
 #import "LXMExpandLayout.h"
+#import "LXMCopiedView.h"
 
 
-@interface LXMExpandLayout ()
+@interface LXMExpandLayout ()<UIGestureRecognizerDelegate>
 
 @property (nonatomic, assign) CGFloat itemWidth;
 @property (nonatomic, assign) CGFloat itemHeight;
@@ -23,6 +24,13 @@
 @property (nonatomic, assign) NSInteger numberOfItemsInRow;
 
 @property (nonatomic, strong) NSArray *sameRowItemArray;
+
+//手势相关
+@property (nonatomic, assign) BOOL isGestureSetted;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
+@property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
+@property (nonatomic, strong) LXMCopiedView *fakeCellView;
+
 
 @end
 
@@ -53,14 +61,16 @@
     self.expandedFactor = self.expandedItemWidth / self.itemWidth;
     self.expandedItemHeight = self.itemHeight * self.expandedFactor;
     
+    [self setupGesture];
 }
+
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
     if ([self.collectionView numberOfItemsInSection:0] == 0) {
         return nil;
     }
     //因为每次layout的时候这两个属性都会变，所以写在这里
-    UICollectionViewLayoutAttributes *selectedAttributes = [self layoutAttributesForItemAtIndexPath:self.seletedIndexPath];
+    UICollectionViewLayoutAttributes *selectedAttributes = [super layoutAttributesForItemAtIndexPath:self.seletedIndexPath];
     self.selectedItemOriginalY = selectedAttributes.frame.origin.y;//取出selectedItem没放大时的y位置
     self.sameRowItemArray = [super layoutAttributesForElementsInRect:CGRectMake(0, selectedAttributes.frame.origin.y, self.collectionViewWidth - self.sectionInset.left - self.sectionInset.right, self.itemHeight)];//取出跟selectedItem同一行的items
     BOOL shouldExpandToLeft = [self shouldItemExpandToLeftWithAttributes:selectedAttributes];//这个是根据selectedItem变的
@@ -69,7 +79,6 @@
     CGRect newRect = rect;
     newRect.origin.y = newRect.origin.y - CGRectGetHeight(self.collectionView.bounds);
     newRect.size.height += CGRectGetHeight(self.collectionView.bounds) * 2;
-    newRect = CGRectMake(0, 0, self.collectionViewContentSize.width, self.collectionViewContentSize.height);
     NSArray *originalArray = [super layoutAttributesForElementsInRect:newRect];//因为要改变item的大小，会导致rect比默认的rect要大，所以这里要相应扩大计算范围，否则会出现显示不全的问题
     CGFloat heightPadding = (self.expandedItemHeight - self.itemHeight * (self.numberOfItemsInRow - 1)) / (self.numberOfItemsInRow - 2);
    
@@ -88,12 +97,12 @@
         if (attributes.indexPath.item == self.seletedIndexPath.item &&
             attributes.indexPath.section == self.seletedIndexPath.section) {
             //被选中的item
+            attributes.bounds = CGRectMake(0, 0, self.expandedItemWidth, self.expandedItemHeight);
             if (shouldExpandToLeft) {
-                attributes.transform = CGAffineTransformMakeTranslation(self.expandedItemWidth / 2 - attributes.center.x + self.sectionInset.left, self.expandedItemHeight / 2 - self.itemHeight / 2);//平移到中心位置
-                attributes.transform = CGAffineTransformScale(attributes.transform, self.expandedFactor, self.expandedFactor);//放大
+                attributes.center = CGPointMake(attributes.center.x + self.expandedItemWidth / 2 - attributes.center.x + self.sectionInset.left, attributes.center.y + self.expandedItemHeight / 2 - self.itemHeight / 2);
+                
             } else {
-                attributes.transform = CGAffineTransformMakeTranslation((self.collectionViewWidth - self.expandedItemWidth / 2) - attributes.center.x - self.sectionInset.right, self.expandedItemHeight / 2 - self.itemHeight / 2);//平移到中心位置
-                attributes.transform = CGAffineTransformScale(attributes.transform, self.expandedFactor, self.expandedFactor);//放大
+                attributes.center = CGPointMake(attributes.center.x + (self.collectionViewWidth - self.expandedItemWidth / 2) - attributes.center.x - self.sectionInset.right, attributes.center.y + self.expandedItemHeight / 2 - self.itemHeight / 2);
             }
         } else if ([self isItemInTheSelectedIndexPathRowWithUICollectionViewLayoutAttributes:attributes]) {
             //与选中item同一行的item，竖直排列在选中item的旁边
@@ -131,6 +140,7 @@
 
 
 
+
 #pragma mark - privateMethod
 
 - (BOOL)isItemInTheSelectedIndexPathRowWithUICollectionViewLayoutAttributes:(UICollectionViewLayoutAttributes *)attributes {
@@ -155,10 +165,121 @@
     return result;
 }
 
+- (void)setupGesture {
+    if (self.isGestureSetted == NO) {
+        _longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+        _longPressGesture.delegate = self;
+        [self.collectionView addGestureRecognizer:_longPressGesture];
+        
+        _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+        _panGesture.delegate = self;
+        [self.collectionView addGestureRecognizer:_panGesture];
+        
+        self.isGestureSetted = YES;
+    }
+}
+
+
+- (void)moveItemIfNeeded {
+    NSIndexPath *atIndexPath = self.fakeCellView.indexPath;
+    NSIndexPath *toIndexPath = [self.collectionView indexPathForItemAtPoint:self.fakeCellView.center];
+    if (toIndexPath == nil || [toIndexPath isEqual:atIndexPath]) {
+        NSLog(@"return le");
+        return;
+    }
+    
+    [self.collectionView performBatchUpdates:^{
+        [self.collectionView moveItemAtIndexPath:atIndexPath toIndexPath:toIndexPath];
+    } completion:^(BOOL finished) {
+    }];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer == self.panGesture) {
+        if (self.longPressGesture.state == UIGestureRecognizerStatePossible ||
+            self.longPressGesture.state == UIGestureRecognizerStateFailed) {
+            //如果长按手势没有识别处理，则pan手势不能执行
+            return NO;
+        }
+    } else if (gestureRecognizer == self.longPressGesture) {
+        if (self.collectionView.panGestureRecognizer.state != UIGestureRecognizerStatePossible &&
+            self.collectionView.panGestureRecognizer.state !=UIGestureRecognizerStateFailed) {
+            //如果系统的pan手势识别出来了，则长按手势不应该被执行
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ([gestureRecognizer isEqual:self.panGesture]
+        && [otherGestureRecognizer isEqual:self.longPressGesture]) {
+        return YES;
+    } else if ([gestureRecognizer isEqual:self.longPressGesture]
+               && [otherGestureRecognizer isEqual:self.panGesture]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+#pragma mark - gestureAction
+
+- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender {
+   
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        NSLog(@"UIGestureRecognizerStateBegan");
+        CGPoint loaction = [sender locationInView:self.collectionView];
+        NSIndexPath *longPressedIndexPath = [self.collectionView indexPathForItemAtPoint:loaction];
+        if (longPressedIndexPath) {
+            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:longPressedIndexPath];
+            self.fakeCellView = [[LXMCopiedView alloc] initWithTargetView:cell andIndexPath:longPressedIndexPath];
+            [self.collectionView addSubview:self.fakeCellView];
+//            [self invalidateLayout];//这句是干什么用的？
+            [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+                self.fakeCellView.bounds = CGRectMake(0, 0, self.itemWidth * 1.1, self.itemHeight * 1.1);
+            } completion:^(BOOL finished) {
+                
+            }];
+            
+            
+        } else {
+            return;//当前位置没有cell
+        }
+        
+        
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        NSLog(@"UIGestureRecognizerStateEnded");
+        [self.fakeCellView removeFromSuperview];
+        self.fakeCellView = nil;
+    } else {
+
+    }
+    
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateChanged) {
+        CGPoint translation = [sender translationInView:self.collectionView];
+        self.fakeCellView.center = CGPointMake(self.fakeCellView.originalCenter.x + translation.x, self.fakeCellView.originalCenter.y + translation.y);
+        
+    }
+    
+    
+}
+
 @end
 
 
-#pragma mark - 
+
+
+
+
+
+
+#pragma mark - UICollectionView 扩展
 
 @implementation UICollectionView (LXMExpandLayout)
 
