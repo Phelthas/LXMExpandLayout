@@ -18,6 +18,8 @@
 @property (nonatomic, assign) CGFloat expandedItemHeight;
 @property (nonatomic, assign) CGFloat expandedFactor;
 @property (nonatomic, assign) CGFloat collectionViewWidth;
+@property (nonatomic, assign) CGFloat orderedItemAlpha;
+
 
 @property (nonatomic, assign) CGFloat selectedItemOriginalY;
 @property (nonatomic, assign) CGFloat padding;//item 之间的间隔
@@ -42,6 +44,7 @@
     if (self) {
         self.numberOfItemsInRow = 1;//这里必须不能是0，否则下面会出现0/0的bug
         self.seletedIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+        self.orderedItemAlpha = 0.5;
     }
     return self;
 }
@@ -63,6 +66,7 @@
     
     [self setupGesture];
 }
+
 
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
@@ -93,6 +97,9 @@
     }
 
     for (UICollectionViewLayoutAttributes *attributes in resultArray) {
+        if ([attributes.indexPath isEqual:self.fakeCellView.indexPath]) {
+            attributes.alpha = self.orderedItemAlpha;
+        }
         
         if (attributes.indexPath.item == self.seletedIndexPath.item &&
             attributes.indexPath.section == self.seletedIndexPath.section) {
@@ -184,11 +191,11 @@
     NSIndexPath *atIndexPath = self.fakeCellView.indexPath;
     NSIndexPath *toIndexPath = [self.collectionView indexPathForItemAtPoint:self.fakeCellView.center];
     if (toIndexPath == nil || [toIndexPath isEqual:atIndexPath]) {
-        NSLog(@"return le");
         return;
     }
     
     [self.collectionView performBatchUpdates:^{
+        self.fakeCellView.indexPath = toIndexPath;//注意这一句必须写，否则会出问题
         [self.collectionView moveItemAtIndexPath:atIndexPath toIndexPath:toIndexPath];
     } completion:^(BOOL finished) {
     }];
@@ -230,7 +237,6 @@
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender {
    
     if (sender.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"UIGestureRecognizerStateBegan");
         CGPoint loaction = [sender locationInView:self.collectionView];
         NSIndexPath *longPressedIndexPath = [self.collectionView indexPathForItemAtPoint:loaction];
         if (longPressedIndexPath) {
@@ -240,6 +246,7 @@
 //            [self invalidateLayout];//这句是干什么用的？
             [UIView animateWithDuration:0.4 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
                 self.fakeCellView.bounds = CGRectMake(0, 0, self.itemWidth * 1.1, self.itemHeight * 1.1);
+                cell.alpha = self.orderedItemAlpha;
             } completion:^(BOOL finished) {
                 
             }];
@@ -251,9 +258,10 @@
         
         
     } else if (sender.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"UIGestureRecognizerStateEnded");
         [self.fakeCellView removeFromSuperview];
         self.fakeCellView = nil;
+        [self invalidateLayout];
+        
     } else {
 
     }
@@ -264,9 +272,12 @@
     if (sender.state == UIGestureRecognizerStateChanged) {
         CGPoint translation = [sender translationInView:self.collectionView];
         self.fakeCellView.center = CGPointMake(self.fakeCellView.originalCenter.x + translation.x, self.fakeCellView.originalCenter.y + translation.y);
+        [self moveItemIfNeeded];
+    }
+    if (sender.state == UIGestureRecognizerStateEnded ||
+        sender.state == UIGestureRecognizerStateCancelled) {
         
     }
-    
     
 }
 

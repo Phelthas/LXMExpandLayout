@@ -10,7 +10,6 @@
 
 @interface LXMCopiedView ()
 
-@property (nonatomic, strong, readwrite) NSIndexPath *indexPath;
 @property (nonatomic, strong, readwrite) UIImageView *imageView;
 @property (nonatomic, assign, readwrite) CGPoint originalCenter;
 
@@ -22,7 +21,6 @@
     self = [super initWithFrame:aView.frame];
     if (self) {
         _indexPath = indexPath;
-//        _originalCenter = CGPointMake(aView.frame.origin.x + CGRectGetWidth(aView.frame) / 2, aView.frame.origin.y + CGRectGetHeight(aView.frame) / 2);
         _originalCenter = aView.center;
         
         _imageView = [[UIImageView alloc] initWithFrame:aView.bounds];

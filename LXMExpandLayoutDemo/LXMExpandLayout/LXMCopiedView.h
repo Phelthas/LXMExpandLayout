@@ -10,7 +10,7 @@
 
 @interface LXMCopiedView : UIView
 
-@property (nonatomic, strong, readonly) NSIndexPath *indexPath;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, strong, readonly) UIImageView *imageView;
 @property (nonatomic, assign, readonly) CGPoint originalCenter;
 

@@ -20,5 +20,4 @@ NSString * const TESTCollectionViewCellIdentifier = @"TESTCollectionViewCellIden
     self.layer.borderWidth = 1;
 }
 
-
 @end
