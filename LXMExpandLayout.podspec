@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "LXMExpandLayout"
-  s.version      = "0.0.3"
+  s.version      = "0.0.4"
   s.summary      = "A UICollectionViewLayout that can expand one item with spring animation without doing any transition, support cell with any size."
 
   s.description  = <<-DESC
@@ -23,7 +23,7 @@ Now it supports drag to reorder.
 
   s.platform     = :ios, "7.0"
 
-  s.source       = { :git => "https://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.3" }
+  s.source       = { :git => "https://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.4" }
 
   s.source_files  = "LXMExpandLayoutDemo/LXMExpandLayout/*.{h,m}"
 
