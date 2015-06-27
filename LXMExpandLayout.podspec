@@ -3,13 +3,16 @@ Pod::Spec.new do |s|
 
 
   s.name         = "LXMExpandLayout"
-  s.version      = "0.0.2"
+  s.version      = "0.0.3"
   s.summary      = "A UICollectionViewLayout that can expand one item with spring animation without doing any transition, support cell with any size."
 
   s.description  = <<-DESC
 	LXMExpandLayout is a imitation of DaiExpandCollectionView and I made several improvements to make it more easy to use.
 
 Now it supports cell with any size, you can use it just like any other UICollectionViewFlowLayout, all you have to do is to set the itemSize and then all are done .
+
+Now it supports drag to reorder.
+
                    DESC
 
   s.homepage     = "https://github.com/Phelthas/LXMExpandLayout"
@@ -20,7 +23,7 @@ Now it supports cell with any size, you can use it just like any other UICollect
 
   s.platform     = :ios, "7.0"
 
-  s.source       = { :git => "https://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.2" }
+  s.source       = { :git => "https://github.com/Phelthas/LXMExpandLayout.git", :tag => "0.0.3" }
 
   s.source_files  = "LXMExpandLayoutDemo/LXMExpandLayout/*.{h,m}"
 
