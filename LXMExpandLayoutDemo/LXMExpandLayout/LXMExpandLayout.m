@@ -9,6 +9,12 @@
 #import "LXMExpandLayout.h"
 #import "LXMCopiedView.h"
 
+typedef NS_ENUM(NSInteger, LXMAutoScrollDirection) {
+    LXMAutoScrollDirectionUp = 0,
+    LXMAutoScrollDirectionDown,
+    LXMAutoScrollDirectionNone,
+};
+
 
 @interface LXMExpandLayout ()<UIGestureRecognizerDelegate>
 
@@ -31,8 +37,10 @@
 @property (nonatomic, assign) BOOL isGestureSetted;
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
+@property (nonatomic, assign) CGPoint panTranslation;
 @property (nonatomic, strong) LXMCopiedView *fakeCellView;
-
+@property (nonatomic, strong) CADisplayLink *displayLink;
+@property (nonatomic, assign) LXMAutoScrollDirection autoScrollDirection;
 
 @end
 
@@ -201,6 +209,48 @@
     }];
 }
 
+- (void)setUpDisplayLink {
+    if (_displayLink) {
+        return;
+    }
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(autoScroll)];
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+-  (void)invalidateDisplayLink {
+    [_displayLink invalidate];
+    _displayLink = nil;
+}
+
+- (void)autoScroll {
+    CGPoint newContentOffset = self.collectionView.contentOffset;
+    if (self.autoScrollDirection == LXMAutoScrollDirectionUp) {
+        NSLog(@"LXMAutoScrollDirectionUp");
+        newContentOffset.y -= 10;
+        if (newContentOffset.y < - self.collectionView.contentInset.top) {
+            newContentOffset.y = - self.collectionView.contentInset.top;
+            [self invalidateDisplayLink];
+        }
+        [self.collectionView setContentOffset:newContentOffset animated:NO];
+        self.fakeCellView.originalCenter = CGPointMake(self.fakeCellView.originalCenter.x, self.fakeCellView.originalCenter.y - 10);
+        self.fakeCellView.center = CGPointMake(self.fakeCellView.originalCenter.x + self.panTranslation.x, self.fakeCellView.originalCenter.y + self.panTranslation.y);
+        NSLog(@"panTranslation is %@", NSStringFromCGPoint(self.panTranslation));
+    } else if (self.autoScrollDirection == LXMAutoScrollDirectionDown) {
+        NSLog(@"LXMAutoScrollDirectionDown");
+        newContentOffset.y += 10;
+        if (newContentOffset.y >= self.collectionViewContentSize.height - CGRectGetHeight(self.collectionView.bounds)) {
+            newContentOffset.y = self.collectionViewContentSize.height - CGRectGetHeight(self.collectionView.bounds);
+            [self invalidateDisplayLink];
+        }
+        [self.collectionView setContentOffset:newContentOffset animated:NO];
+        self.fakeCellView.originalCenter = CGPointMake(self.fakeCellView.originalCenter.x, self.fakeCellView.originalCenter.y + 10);
+        self.fakeCellView.center = CGPointMake(self.fakeCellView.originalCenter.x + self.panTranslation.x, self.fakeCellView.originalCenter.y + self.panTranslation.y);
+    } else {
+        [self invalidateDisplayLink];
+        return;
+    }
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
@@ -235,12 +285,12 @@
 #pragma mark - gestureAction
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender {
-   
     if (sender.state == UIGestureRecognizerStateBegan) {
         CGPoint loaction = [sender locationInView:self.collectionView];
         NSIndexPath *longPressedIndexPath = [self.collectionView indexPathForItemAtPoint:loaction];
         if (longPressedIndexPath) {
-            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:longPressedIndexPath];
+            self.collectionView.scrollsToTop = NO;
+            UICollectionViewCell *cell  = [self.collectionView cellForItemAtIndexPath:longPressedIndexPath];
             self.fakeCellView = [[LXMCopiedView alloc] initWithTargetView:cell andIndexPath:longPressedIndexPath];
             [self.collectionView addSubview:self.fakeCellView];
 //            [self invalidateLayout];//这句是干什么用的？
@@ -257,11 +307,15 @@
         }
         
         
-    } else if (sender.state == UIGestureRecognizerStateEnded) {
+    } else if (sender.state == UIGestureRecognizerStateEnded ||
+               sender.state == UIGestureRecognizerStateCancelled) {
+        self.collectionView.scrollsToTop = YES;
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:self.fakeCellView.indexPath];
+        cell.alpha = 1.0;//加上这一句是防止没有移动时cell没有恢复原状的问题
         [self.fakeCellView removeFromSuperview];
         self.fakeCellView = nil;
         [self invalidateLayout];
-        
+        [self invalidateDisplayLink];
     } else {
 
     }
@@ -270,13 +324,33 @@
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateChanged) {
-        CGPoint translation = [sender translationInView:self.collectionView];
-        self.fakeCellView.center = CGPointMake(self.fakeCellView.originalCenter.x + translation.x, self.fakeCellView.originalCenter.y + translation.y);
+        self.panTranslation = [sender translationInView:self.collectionView];
+        self.fakeCellView.center = CGPointMake(self.fakeCellView.originalCenter.x + self.panTranslation.x, self.fakeCellView.originalCenter.y + self.panTranslation.y);
         [self moveItemIfNeeded];
+        
+        //autoScroll
+        if (CGRectGetMaxY(self.fakeCellView.frame) > self.collectionView.contentOffset.y + CGRectGetHeight(self.collectionView.bounds) &&
+            CGRectGetMaxY(self.fakeCellView.frame) < self.collectionViewContentSize.height) {
+           
+            self.autoScrollDirection = LXMAutoScrollDirectionDown;
+            [self setUpDisplayLink];
+        } else if (CGRectGetMinY(self.fakeCellView.frame) < self.collectionView.contentOffset.y + self.collectionView.contentInset.top &&
+                   self.collectionView.contentOffset.y > - 64) {
+//            NSLog(@"fakeViewFrame is %@", NSStringFromCGRect(self.fakeCellView.frame));
+//            NSLog(@"offset is %@", NSStringFromCGPoint(self.collectionView.contentOffset));
+            self.autoScrollDirection = LXMAutoScrollDirectionUp;
+            [self setUpDisplayLink];
+        } else {
+            self.autoScrollDirection = LXMAutoScrollDirectionNone;
+            [self invalidateDisplayLink];
+        }
+        
+        
+        
     }
     if (sender.state == UIGestureRecognizerStateEnded ||
         sender.state == UIGestureRecognizerStateCancelled) {
-        
+        //结束写在longPress的手势里了，所以这里不用写了
     }
     
 }

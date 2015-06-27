@@ -11,7 +11,6 @@
 @interface LXMCopiedView ()
 
 @property (nonatomic, strong, readwrite) UIImageView *imageView;
-@property (nonatomic, assign, readwrite) CGPoint originalCenter;
 
 @end
 

@@ -12,7 +12,7 @@
 
 @property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, strong, readonly) UIImageView *imageView;
-@property (nonatomic, assign, readonly) CGPoint originalCenter;
+@property (nonatomic, assign) CGPoint originalCenter;
 
 - (instancetype)initWithTargetView:(UIView *)aView andIndexPath:(NSIndexPath *)indexPath;
 
