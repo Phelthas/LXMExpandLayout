@@ -12,7 +12,7 @@
 
 extern NSString * const TESTCollectionViewCellIdentifier;
 
-@interface ViewController ()<UICollectionViewDataSource, UICollectionViewDelegate>
+@interface ViewController ()<UICollectionViewDataSource, UICollectionViewDelegate, LXMExpandLayoutDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
@@ -26,6 +26,7 @@ extern NSString * const TESTCollectionViewCellIdentifier;
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     LXMExpandLayout *expandLayout = [[LXMExpandLayout alloc] init];
+    expandLayout.delegate = self;
     expandLayout.itemSize = CGSizeMake(80, 100);
 //    expandLayout.minimumLineSpacing = 20;//默认是10，可以随便设置
 //    expandLayout.minimumInteritemSpacing = 20;//默认是10，可以随便设置
@@ -72,6 +73,14 @@ extern NSString * const TESTCollectionViewCellIdentifier;
     NSLog(@"it is %@", @(indexPath.row));
     [self.collectionView expandItemAtIndexPath:indexPath animated:YES];
     
+}
+
+#pragma mark - LXMExpandLayoutDelegate
+
+- (void)lxmExpandLayout:(LXMExpandLayout *)layout didMoveItemAtIndexPath:(NSIndexPath *)atIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    UIImage *image = [self.dataArray objectAtIndex:atIndexPath.item];
+    [self.dataArray removeObjectAtIndex:atIndexPath.item];
+    [self.dataArray insertObject:image atIndex:toIndexPath.item];
 }
 
 #pragma mark - buttonAction

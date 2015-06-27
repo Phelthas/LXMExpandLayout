@@ -206,6 +206,9 @@ typedef NS_ENUM(NSInteger, LXMAutoScrollDirection) {
         self.fakeCellView.indexPath = toIndexPath;//注意这一句必须写，否则会出问题
         [self.collectionView moveItemAtIndexPath:atIndexPath toIndexPath:toIndexPath];
     } completion:^(BOOL finished) {
+        if ([self.delegate respondsToSelector:@selector(lxmExpandLayout:didMoveItemAtIndexPath:toIndexPath:)]) {
+            [self.delegate lxmExpandLayout:self didMoveItemAtIndexPath:atIndexPath toIndexPath:toIndexPath];
+        }
     }];
 }
 

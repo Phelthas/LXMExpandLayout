@@ -8,9 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+@class LXMExpandLayout;
+
+@protocol LXMExpandLayoutDelegate <NSObject>
+
+- (void)lxmExpandLayout:(LXMExpandLayout *)layout didMoveItemAtIndexPath:(NSIndexPath *)atIndexPath toIndexPath:(NSIndexPath *)toIndexPath;
+
+@end
+
+
 @interface LXMExpandLayout : UICollectionViewFlowLayout
 
 @property (nonatomic, strong) NSIndexPath *seletedIndexPath;
+@property (nonatomic, assign) id<LXMExpandLayoutDelegate> delegate;
 
 @end
 
