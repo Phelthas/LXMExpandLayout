@@ -10,9 +10,9 @@
 #import "LXMCopiedView.h"
 
 typedef NS_ENUM(NSInteger, LXMAutoScrollDirection) {
-    LXMAutoScrollDirectionUp = 0,
+    LXMAutoScrollDirectionNone = 0,
+    LXMAutoScrollDirectionUp,
     LXMAutoScrollDirectionDown,
-    LXMAutoScrollDirectionNone,
 };
 
 
