@@ -16,7 +16,7 @@ with itemSize set to {80, 100}, you will see three items in one row on iPhone5, 
 there are some limitation on this LXMExpandLayout, the itemSize you set, however, you must make sure that there are at least three items in one row, otherwise it will do not work......
 
 ##Update
-version 0.0.3, fix some bugs, support drag to reorder       
+version 0.0.4, fix some bugs, support drag to reorder       
 inpired by [RACollectionViewReorderableTripletLayout](https://github.com/ra1028/RACollectionViewReorderableTripletLayout) by [ra1028](https://github.com/ra1028)
 
 
@@ -27,11 +27,11 @@ now you can set the `sectionInsect`of LXMExpandLayout and it will work just like
 
 ##Install 
 ###Using cocoaPods
-1, add `pod 'LXMExpandLayout', '0.0.2'`to your podFile    
+1, add `pod 'LXMExpandLayout', '0.0.4'`to your podFile    
 2, run `pod install` or `pod update`        
 
 ###manually
-1, add `LXMExpandLayout.h`,`LXMExpandLayout.m`,`UICollectionView+LXMExpandLayout.h`,`UICollectionView+LXMExpandLayout.m` to your project
+1, add `LXMExpandLayout.h`,`LXMExpandLayout.m`,`LXMCopiedView.h`,`LXMCopiedView.m` to your project
 
 ##How to use
 1,add `#import "LXMExpandLayout.h"` to your viewController    
