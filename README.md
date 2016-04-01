@@ -59,6 +59,9 @@ if you have any questions or suggestions, wellcome for issues and pullRequest.
 ## License
 LXMExpandLayout is available under the MIT license. See the LICENSE file for more info. 
 
+## 帮助   
+[这里](http://www.cnblogs.com/Phelthas/p/4537191.html)有一篇博客，简单总结了下该库的实现思路和遇到的坑
+
 
 
 
